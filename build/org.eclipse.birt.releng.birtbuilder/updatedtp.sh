@@ -1,6 +1,8 @@
 # User specific environment and startup programs
 umask 002
 
+#test1
+
 BASE_PATH=.:/bin:/usr/bin:/usr/bin/X11:/usr/local/bin:/usr/bin:/usr/X11R6/bin
 LD_LIBRARY_PATH=.
 BASH_ENV=$HOME/.bashrc
