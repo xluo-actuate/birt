@@ -12,6 +12,7 @@ umask 002
 #test9
 #test10
 #test11
+#test12
 
 BASE_PATH=.:/bin:/usr/bin:/usr/bin/X11:/usr/local/bin:/usr/bin:/usr/X11R6/bin
 LD_LIBRARY_PATH=.
