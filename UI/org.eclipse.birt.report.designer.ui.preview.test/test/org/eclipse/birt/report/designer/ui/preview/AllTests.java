@@ -16,9 +16,7 @@ import junit.framework.TestSuite;
 
 /**
  * All test cases.
- * 
  */
-
 public class AllTests extends TestCase
 {
 
