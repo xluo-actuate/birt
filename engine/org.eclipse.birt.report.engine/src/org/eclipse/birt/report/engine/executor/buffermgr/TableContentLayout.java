@@ -36,7 +36,7 @@ import org.eclipse.birt.report.engine.presentation.UnresolvedRowHint;
 public class TableContentLayout
 {
 	
-	public final Integer MAX_ROW_SPAN = 10000;
+	private int maxRowSpan = 10000;
 	/**
 	 * rows in the table layout
 	 */
@@ -283,7 +283,12 @@ public class TableContentLayout
 	
 	public boolean exceedMaxCache()
 	{
-		return this.rowCount >= MAX_ROW_SPAN;
+		return this.rowCount >= maxRowSpan;
+	}
+	
+	public void setMaxRowSpan( int maxRowSpan )
+	{
+	    this.maxRowSpan = maxRowSpan;
 	}
 	
 	public void setNeedFormalize( boolean formalize )

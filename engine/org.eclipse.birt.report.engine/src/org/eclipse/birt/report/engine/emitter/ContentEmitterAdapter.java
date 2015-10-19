@@ -207,4 +207,10 @@ public class ContentEmitterAdapter implements IContentEmitter
 		startGroup(group);
 	}
 
+    @Override
+    public int getMaxRowSpan( )
+    {
+        return 0;
+    }
+
 }

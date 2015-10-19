@@ -123,4 +123,6 @@ public interface IContentEmitter
 	void startListGroup( IListGroupContent group ) throws BirtException;
 
 	void endListGroup( IListGroupContent group ) throws BirtException;
+	
+	int getMaxRowSpan( );
 }

@@ -175,6 +175,11 @@ public class HTMLTableLayoutEmitter extends ContentEmitterAdapter
 		String keyString = context.getPageHintManager( ).getHintMapKey(table.getInstanceID( ).toUniqueString( ));
 		this.layout = new TableContentLayout( table,
 				getOutputFormat( ), context, keyString );
+		int maxRowSpan = emitter.getMaxRowSpan( );
+		if ( maxRowSpan != 0 )
+		{
+		    layout.setMaxRowSpan( maxRowSpan );
+		}
 		this.layoutEvents = new Stack( );
 		UnresolvedRowHint hint = null;
 		if(isFirst)
@@ -747,5 +752,11 @@ public class HTMLTableLayoutEmitter extends ContentEmitterAdapter
 	public IContentEmitter getInternalEmitter( )
 	{
 		return emitter;
+	}
+	
+	@Override
+	public int getMaxRowSpan()
+	{
+	    return emitter == null ? 0 : emitter.getMaxRowSpan( );
 	}
 }
