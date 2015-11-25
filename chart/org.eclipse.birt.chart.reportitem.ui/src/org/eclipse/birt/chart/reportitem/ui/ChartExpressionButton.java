@@ -12,6 +12,7 @@
 package org.eclipse.birt.chart.reportitem.ui;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,15 +23,19 @@ import org.eclipse.birt.chart.model.impl.ChartModelHelper;
 import org.eclipse.birt.chart.reportitem.ui.ChartExpressionButtonUtil.ChartExpressionHelper;
 import org.eclipse.birt.chart.reportitem.ui.ChartExpressionButtonUtil.ExpressionDescriptor;
 import org.eclipse.birt.chart.reportitem.ui.ChartExpressionButtonUtil.IExpressionDescriptor;
+import org.eclipse.birt.chart.ui.swt.ColumnBindingInfo;
 import org.eclipse.birt.chart.ui.swt.interfaces.IAssistField;
 import org.eclipse.birt.chart.ui.swt.interfaces.IExpressionButton;
 import org.eclipse.birt.chart.ui.util.ChartUIUtil.EAttributeAccessor;
 import org.eclipse.birt.chart.util.ChartExpressionUtil.ExpressionCodec;
+import org.eclipse.birt.core.data.ExpressionUtil;
 import org.eclipse.birt.report.designer.internal.ui.dialogs.expression.ExpressionButton;
 import org.eclipse.birt.report.designer.internal.ui.util.ExpressionButtonUtil;
 import org.eclipse.birt.report.designer.ui.dialogs.IExpressionProvider;
+import org.eclipse.birt.report.model.api.ComputedColumnHandle;
 import org.eclipse.birt.report.model.api.Expression;
 import org.eclipse.birt.report.model.api.ExtendedItemHandle;
+import org.eclipse.birt.report.model.api.elements.structures.ComputedColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -227,7 +232,7 @@ public class ChartExpressionButton implements IExpressionButton
 		if ( bindingName != null && bindingName.length( ) > 0 )
 		{
 			exprCodec.setBindingName( bindingName,
-					isCube( ),
+					isCube( bindingName ),
 					eHelper.getExpressionType( ) );
 			eHelper.setExpression( exprCodec.getExpression( ) );
 		}
@@ -245,6 +250,39 @@ public class ChartExpressionButton implements IExpressionButton
 
 		lastExpr.setExpression( eHelper.getExpression( ) );
 		lastExpr.setType( eHelper.getExpressionType( ) );
+	}
+
+	private boolean isCube( String bindingName )
+	{
+		Object context = this.eHelper.getContextObject( );
+		if ( context instanceof ExtendedItemHandle )
+		{
+			ExtendedItemHandle eih = (ExtendedItemHandle)context;
+			Iterator bindings = eih.getAvailableBindings( );
+			while ( bindings.hasNext( ) )
+			{
+				Object binding = bindings.next( );
+				if ( binding instanceof ComputedColumnHandle )
+				{
+					ComputedColumnHandle cch = (ComputedColumnHandle)binding;
+					if ( cch.getName( ).equals( bindingName )
+							&& cch.getExpressionProperty(
+									ComputedColumn.EXPRESSION_MEMBER ) != null
+							&& cch.getExpressionProperty(
+									ComputedColumn.EXPRESSION_MEMBER )
+									.getStringValue( ) != null
+							&& cch.getExpressionProperty(
+									ComputedColumn.EXPRESSION_MEMBER )
+									.getStringValue( )
+									.startsWith(
+											ExpressionUtil.MEASURE_INDICATOR ) )
+					{
+						return true;
+					}
+				}
+			}
+		}
+		return this.isCube( );
 	}
 
 	public void setExpression( String expr, boolean bNotifyEvents )
@@ -287,6 +325,15 @@ public class ChartExpressionButton implements IExpressionButton
 		Set<IExpressionDescriptor> set = new LinkedHashSet<IExpressionDescriptor>( );
 		for ( Object obj : predefinedQuery )
 		{
+			if ( obj instanceof ColumnBindingInfo )
+			{
+				String expr = ( (ColumnBindingInfo) obj ).getExpression( );
+				if ( expr.startsWith( ExpressionUtil.DATA_INDICATOR ) )
+				{
+					set.add( ExpressionDescriptor.getInstance( obj, true ) );
+					continue;
+				}
+			}
 			set.add( ExpressionDescriptor.getInstance( obj, isCube ) );
 		}
 

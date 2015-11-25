@@ -64,7 +64,7 @@ public class QueryDefinition extends BaseQueryDefinition implements IQueryDefini
 	 * can be another query, or a sub query.
 	 * @param parent The outer query or subquery
 	 */
-	public QueryDefinition( BaseQueryDefinition parent)
+	public QueryDefinition( IBaseQueryDefinition parent)
 	{
 		super(parent);
 	}
@@ -74,7 +74,7 @@ public class QueryDefinition extends BaseQueryDefinition implements IQueryDefini
 	 * @param parent
 	 * @param autoBinding
 	 */
-	public QueryDefinition( BaseQueryDefinition parent, boolean autoBinding )
+	public QueryDefinition( IBaseQueryDefinition parent, boolean autoBinding )
 	{
 		super( parent );
 		this.autoBinding = autoBinding;
@@ -188,16 +188,43 @@ public class QueryDefinition extends BaseQueryDefinition implements IQueryDefini
 		return this.isSummaryQuery;
 	}
 
-    @Override
     public Set<IBaseLinkDefinition> getLinks( )
     {
         return this.links;
     }
 
-    @Override
     public void addLink( IBaseLinkDefinition link )
     {
         this.links.add( link );
+    }
+    
+    public void setLinks( Set<IBaseLinkDefinition> links )
+    {
+        this.links = links;
+    }
+    
+    protected void cloneFields( QueryDefinition clone )
+    {
+        super.cloneFields( clone );
+        clone.dataSetName = dataSetName;
+        clone.queryResultsID = queryResultsID;
+        clone.bindings.addAll( bindings );
+        clone.projectedColumns = projectedColumns;
+        clone.autoBinding = autoBinding;
+        clone.isSummaryQuery = isSummaryQuery;
+        if ( sourceQuery instanceof IQueryDefinition )
+        {
+            clone.sourceQuery = ( (IQueryDefinition) sourceQuery ).clone( );
+        }
+        clone.links.addAll( links );
+    }
+    
+    public IQueryDefinition clone()
+    {
+        QueryDefinition clone = new QueryDefinition( );
+        cloneFields( clone );
+        
+        return clone;
     }
 
 }
